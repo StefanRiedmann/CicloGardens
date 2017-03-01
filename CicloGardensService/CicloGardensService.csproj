@@ -153,6 +153,14 @@
     <Compile Include="Migrations\201702241826479_FirstSetup.Designer.cs">
       <DependentUpon>201702241826479_FirstSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703011443170_AddedFields.cs" />
+    <Compile Include="Migrations\201703011443170_AddedFields.Designer.cs">
+      <DependentUpon>201703011443170_AddedFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703011833539_CoordsNullable.cs" />
+    <Compile Include="Migrations\201703011833539_CoordsNullable.Designer.cs">
+      <DependentUpon>201703011833539_CoordsNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CicloGardensContext.cs" />
     <Compile Include="Startup.cs" />
@@ -177,6 +185,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201702241826479_FirstSetup.resx">
       <DependentUpon>201702241826479_FirstSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703011443170_AddedFields.resx">
+      <DependentUpon>201703011443170_AddedFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703011833539_CoordsNullable.resx">
+      <DependentUpon>201703011833539_CoordsNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

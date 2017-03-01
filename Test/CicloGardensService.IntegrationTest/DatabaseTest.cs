@@ -15,8 +15,8 @@ namespace CicloGardensService.IntegrationTest
             var migrationsConfiguration = new Migrations.Configuration();
             var migrator = new DbMigrator(migrationsConfiguration);
 
-            var migs = migrator.GetDatabaseMigrations().ToList();
-            var localMigs = migrator.GetLocalMigrations().ToList();
+            var migs = migrator.GetDatabaseMigrations().OrderBy(s => s).ToList();
+            var localMigs = migrator.GetLocalMigrations().OrderBy(s => s).ToList();
             var pendingMigs = migrator.GetPendingMigrations().ToList();
 
             CollectionAssert.AreEqual(migs, localMigs);

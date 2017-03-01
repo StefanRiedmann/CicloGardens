@@ -14,7 +14,7 @@ namespace CicloGardensService.Controllers
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
-            CicloGardensContext context = new CicloGardensContext();
+            var context = new CicloGardensContext();
             DomainManager = new EntityDomainManager<Garden>(context, Request);
         }
 

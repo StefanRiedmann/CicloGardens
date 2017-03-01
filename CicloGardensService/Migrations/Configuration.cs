@@ -7,7 +7,7 @@ namespace CicloGardensService.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    public sealed class Configuration : DbMigrationsConfiguration<CicloGardensService.Models.CicloGardensContext>
+    public sealed class Configuration : DbMigrationsConfiguration<Models.CicloGardensContext>
     {
         public Configuration()
         {

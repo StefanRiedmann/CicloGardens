@@ -7,12 +7,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CicloGardensService.IntegrationTest
 {
     [TestClass]
-    public class Database
+    public class DatabaseTest
     {
         [TestMethod]
         public void MigrationsAreUpToDate()
         {
-            var migrationsConfiguration = new CicloGardensService.Migrations.Configuration();
+            var migrationsConfiguration = new Migrations.Configuration();
             var migrator = new DbMigrator(migrationsConfiguration);
 
             var migs = migrator.GetDatabaseMigrations().ToList();

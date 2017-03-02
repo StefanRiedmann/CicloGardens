@@ -24,6 +24,7 @@ namespace CicloGardensService.IntegrationTest
     public class GardenControllerTest
     {
         public const string BaseUrl = "http://ciclogardens.azurewebsites.net";
+
         private readonly HttpClient _client;
 
         private List<Garden> _gardens ;
@@ -35,6 +36,16 @@ namespace CicloGardensService.IntegrationTest
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
+        [TestInitialize]
+        public void Init()
+        {
+            var ctx = new CicloGardensContext();
+            ctx.Database.ExecuteSqlCommand("DELETE FROM dbo.Gardens");
+            var count = ctx.Garden.Count();
+            if (count > 0) throw new AssertFailedException("Table should be empty now");
+
             _gardens = new List<Garden>(new[]
             {
                 new Garden
@@ -50,15 +61,6 @@ namespace CicloGardensService.IntegrationTest
                     Longitude = -68.96,
                 }
             });
-        }
-
-        [TestInitialize]
-        public void Init()
-        {
-            var ctx = new CicloGardensContext();
-            ctx.Database.ExecuteSqlCommand("DELETE FROM dbo.Gardens");
-            var count = ctx.Garden.Count();
-            if (count > 0) throw new AssertFailedException("Table should be empty now");
         }
 
         #endregion
@@ -130,6 +132,7 @@ namespace CicloGardensService.IntegrationTest
             Assert.AreEqual("NewName", result.Name);
             Assert.AreEqual(32d, result.Longitude);
             Assert.AreEqual(27d, result.Latitude);
+            Assert.AreNotEqual(result.CreatedAt, result.UpdatedAt);
         }
 
         [TestMethod]

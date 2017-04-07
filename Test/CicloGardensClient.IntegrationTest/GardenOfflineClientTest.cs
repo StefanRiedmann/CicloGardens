@@ -1,7 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using CicloGardensClient.Clients;
 using CicloGardensClient.DataObjects;
@@ -10,14 +10,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CicloGardensClient.IntegrationTest
 {
     [TestClass]
-    public class GardenClientTest
+    public class GardenOfflineClientTest
     {
-        private GardenClient _client;
+        private GardenOfflineClient _client;
 
         [TestInitialize]
         public void Setup()
         {
-            _client = new GardenClient();
+            _client = new GardenOfflineClient();
         }
 
         [TestMethod]
@@ -75,6 +75,42 @@ namespace CicloGardensClient.IntegrationTest
                 Assert.AreEqual(0, all.Count);
 
             }).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
+        public void UploadDownloadFile()
+        {
+            Task.Run(async () =>
+            {
+                await _client.Initializer;
+
+                await _client.SetGardenAsync(new Garden { Name = "NewGarden2" });
+                var all = await _client.GetGardensAsync();
+                var garden = all.FirstOrDefault(g => g.Name == "NewGarden2");
+
+                var x = await _client.GetFilesAsync(garden);
+                Debug.WriteLine($"x: {x.Count()}");
+
+                //ResourceTest();
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "CicloGardensClient.IntegrationTest.TestResources.Test1.txt";
+                var stream = assembly.GetManifestResourceStream(resourceName);
+                MemoryStream m = new MemoryStream(new byte[] { 35 });
+
+                await _client.UploadFile(garden, "Test1.txt", m);
+                var uri = _client.DownloadFile(garden, "Test1.txt");
+                Debug.WriteLine($"Uri: {uri}");
+            }).GetAwaiter().GetResult();
+        }
+
+        private void ResourceTest()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resources = assembly.GetManifestResourceNames();
+            foreach (var res in resources)
+            {
+                Debug.WriteLine($"Resource: {res}");
+            }
         }
     }
 }

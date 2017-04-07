@@ -1,23 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CicloGardensClient.DataObjects;
 using Microsoft.WindowsAzure.MobileServices;
-using Microsoft.WindowsAzure.MobileServices.SQLiteStore;
-using Microsoft.WindowsAzure.MobileServices.Sync;
-using Debug= System.Diagnostics.Debug;
+using Microsoft.WindowsAzure.MobileServices.Files;
+using Microsoft.WindowsAzure.MobileServices.Files.Identity;
+using Microsoft.WindowsAzure.MobileServices.Files.Sync;
+using Debug = System.Diagnostics.Debug;
 
 namespace CicloGardensClient.Clients
 {
-    public class GardenClient
+    public class GardenOnlineClient
     {
         private MobileServiceClient _client;
-        private IMobileServiceSyncTable<Garden> _table;
-        private MobileServiceSQLiteStore _store;
+        private IMobileServiceTable<Garden> _table;
 
         public Task<bool> Initializer;
 
-        public GardenClient()
+        public GardenOnlineClient()
         {
             Initializer = InitClientAndSync();
         }
@@ -27,33 +30,13 @@ namespace CicloGardensClient.Clients
             try
             {
                 _client = new MobileServiceClient("http://ciclogardens.azurewebsites.net");
-                _table = _client.GetSyncTable<Garden>();
-                _store = new MobileServiceSQLiteStore(@"localstore.db");
-                _store.DefineTable<Garden>();
-                await _client.SyncContext.InitializeAsync(_store, StoreTrackingOptions.NotifyLocalAndServerOperations);
-                await Sync();
+                _table = _client.GetTable<Garden>();
+                _client.InitializeFileSyncContext(new InMemoryFileSyncHandler(_table));
                 return true;
             }
             catch (Exception e)
             {
                 Debug.WriteLine($"Error initialising garden client: {e.Message}");
-                return false;
-            }
-        }
-
-        public async Task<bool> Sync()
-        {
-            try
-            {
-                await _client.SyncContext.PushAsync();
-                await _table.PullAsync(
-                    "allGardenItems",
-                    _table.CreateQuery());
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Error syncing gardens: {e.Message}");
                 return false;
             }
         }
@@ -100,6 +83,26 @@ namespace CicloGardensClient.Clients
         public async Task DeleteAsync(Garden garden)
         {
             await _table.DeleteAsync(garden);
+        }
+
+        public async Task<IEnumerable<MobileServiceFile>> GetFilesAsync(Garden garden)
+        {
+            return await _table.GetFilesAsync(garden);
+        }
+
+        public async Task UploadFile(Garden garden, string fileName, Stream stream)
+        {
+            await _table.AddFileAsync(garden, fileName, stream);
+        }
+
+        public async Task<Uri> DownloadFile(Garden garden, string fileName)
+        {
+            var files = await _table.GetFilesAsync(garden);
+            var file = files.FirstOrDefault(f => f.Name == fileName);
+            if (file == null)
+                return null;
+            return await  _table.GetFileUri(file, StoragePermissions.Read);
+
         }
     }
 }

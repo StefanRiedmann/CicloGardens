@@ -2,7 +2,6 @@ using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartup(typeof(CicloGardensService.Startup))]
-
 namespace CicloGardensService
 {
     public partial class Startup

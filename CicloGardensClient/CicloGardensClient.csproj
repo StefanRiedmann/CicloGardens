@@ -35,8 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Clients\GardenOnlineClient.cs" />
+    <Compile Include="Clients\InMemoryFileSyncHandler.cs" />
     <Compile Include="DataObjects\Garden.cs" />
-    <Compile Include="Clients\GardenClient.cs" />
+    <Compile Include="Clients\GardenOfflineClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

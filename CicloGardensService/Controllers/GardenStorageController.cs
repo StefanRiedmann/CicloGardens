@@ -14,7 +14,7 @@ namespace CicloGardensService.Controllers
         [Route("tables/Garden/{id}/StorageToken")]
         public async Task<HttpResponseMessage> PostStorageTokenRequest(string id, StorageTokenRequest value)
         {
-            StorageToken token = await GetStorageTokenAsync(id, value);
+            var token = await GetStorageTokenAsync(id, value);
 
             return Request.CreateResponse(token);
         }

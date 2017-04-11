@@ -38,10 +38,10 @@ namespace CicloGardensClient.IntegrationTest
                 await _client.Sync();
                 await _client.SetGardenAsync(new Garden { Name = "NewGarden1" });
                 watch.Stop();
-                Debug.WriteLine($"Time for syncing one new garden: ${watch.ElapsedMilliseconds}");
+                Debug.WriteLine($"Time for syncing one new garden: {watch.ElapsedMilliseconds}");
 
                 var garden = _client.GetGardensAsync().Result.FirstOrDefault(g => g.Name == "NewGarden1");
-                Debug.WriteLine($"Id: ${garden?.Id}");
+                Debug.WriteLine($"Id: {garden?.Id}");
                 Assert.IsNotNull(garden);
                 Assert.IsFalse(string.IsNullOrEmpty(garden?.Id));
 
@@ -55,20 +55,20 @@ namespace CicloGardensClient.IntegrationTest
             {
                 await _client.Initializer;
 
-                await _client.SetGardenAsync(new Garden { Name = "NewGarden2" });
-                await _client.Sync();
+                //await _client.SetGardenAsync(new Garden { Name = "NewGarden2" });
+                //await _client.Sync();
 
                 var all = await _client.GetGardensAsync();
-                Debug.WriteLine($"First count: {all.Count}");
-                Assert.IsTrue(all.Count > 0);
+                Debug.WriteLine($"Deleting {all.Count} garden(s)...");
+                //Assert.IsTrue(all.Count > 0);
 
                 var watch = Stopwatch.StartNew();
                 foreach (var g in all)
                 {
                     await _client.DeleteAsync(g);
-                    await _client.Sync();
                 }
-                Debug.WriteLine($"Time for deleting and syncing ${all.Count} garden(s): ${watch.ElapsedMilliseconds}");
+                await _client.Sync();
+                Debug.WriteLine($"Time for deleting and syncing {all.Count} garden(s): {watch.ElapsedMilliseconds}ms");
 
                 all = await _client.GetGardensAsync();
                 Debug.WriteLine($"Second count: {all.Count}");
@@ -85,20 +85,22 @@ namespace CicloGardensClient.IntegrationTest
                 await _client.Initializer;
 
                 await _client.SetGardenAsync(new Garden { Name = "NewGarden2" });
+                await _client.Sync();
                 var all = await _client.GetGardensAsync();
                 var garden = all.FirstOrDefault(g => g.Name == "NewGarden2");
-
-                var x = await _client.GetFilesAsync(garden);
-                Debug.WriteLine($"x: {x.Count()}");
 
                 //ResourceTest();
                 var assembly = Assembly.GetExecutingAssembly();
                 var resourceName = "CicloGardensClient.IntegrationTest.TestResources.Test1.txt";
                 var stream = assembly.GetManifestResourceStream(resourceName);
-                MemoryStream m = new MemoryStream(new byte[] { 35 });
 
-                await _client.UploadFile(garden, "Test1.txt", m);
-                var uri = _client.DownloadFile(garden, "Test1.txt");
+                await _client.UploadFile(garden, "Test1.txt", stream);
+                //await _client.Sync();
+
+                var x = await _client.GetFilesAsync(garden);
+                Debug.WriteLine($"x: {x.Count()}");
+
+                var uri = await _client.DownloadFile(garden, "Test1.txt");
                 Debug.WriteLine($"Uri: {uri}");
             }).GetAwaiter().GetResult();
         }

@@ -33,12 +33,16 @@ namespace CicloGardensClient.Clients
             try
             {
                 _client = new MobileServiceClient("http://ciclogardens.azurewebsites.net");
-                _syncTable = _client.GetSyncTable<Garden>();
+                
                 _table = _client.GetTable<Garden>();
                 _store = new MobileServiceSQLiteStore(@"localstore.db");
                 _store.DefineTable<Garden>();
+
+                _client.InitializeFileSyncContext(new InMemoryFileSyncHandler(_table), _store);
                 await _client.SyncContext.InitializeAsync(_store, StoreTrackingOptions.NotifyLocalAndServerOperations);
-                _client.InitializeFileSyncContext(new InMemoryFileSyncHandler(_table));
+
+                _syncTable = _client.GetSyncTable<Garden>();
+
                 await Sync();
                 return true;
             }
@@ -57,6 +61,7 @@ namespace CicloGardensClient.Clients
                 await _syncTable.PullAsync(
                     "allGardenItems",
                     _syncTable.CreateQuery());
+                await _syncTable.PushFileChangesAsync();
                 return true;
             }
             catch (Exception e)
@@ -65,7 +70,6 @@ namespace CicloGardensClient.Clients
                 return false;
             }
         }
-
 
         public async Task<ObservableCollection<Garden>> GetGardensAsync()
         {
@@ -117,7 +121,8 @@ namespace CicloGardensClient.Clients
 
         public async Task UploadFile(Garden garden, string fileName, Stream stream)
         {
-            await _table.AddFileAsync(garden, fileName, stream);
+            await _syncTable.AddFileAsync(garden, fileName);
+            //await _table.AddFileAsync(garden, fileName, stream);
         }
 
         public async Task<Uri> DownloadFile(Garden garden, string fileName)

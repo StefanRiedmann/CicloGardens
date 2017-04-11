@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Clients\GardenOnlineClient.cs" />
     <Compile Include="Clients\InMemoryFileSyncHandler.cs" />
+    <Compile Include="Clients\IPlatform.cs" />
     <Compile Include="DataObjects\Garden.cs" />
     <Compile Include="Clients\GardenOfflineClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

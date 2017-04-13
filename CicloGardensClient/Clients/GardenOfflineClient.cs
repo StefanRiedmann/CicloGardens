@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CicloGardensClient.DataObjects;
 using Microsoft.WindowsAzure.MobileServices;
-using Microsoft.WindowsAzure.MobileServices.Files;
-using Microsoft.WindowsAzure.MobileServices.Files.Identity;
 using Microsoft.WindowsAzure.MobileServices.SQLiteStore;
 using Microsoft.WindowsAzure.MobileServices.Sync;
 using Debug= System.Diagnostics.Debug;
@@ -37,8 +35,7 @@ namespace CicloGardensClient.Clients
                 _table = _client.GetTable<Garden>();
                 _store = new MobileServiceSQLiteStore(@"localstore.db");
                 _store.DefineTable<Garden>();
-
-                _client.InitializeFileSyncContext(new InMemoryFileSyncHandler(_table), _store);
+                
                 await _client.SyncContext.InitializeAsync(_store, StoreTrackingOptions.NotifyLocalAndServerOperations);
 
                 _syncTable = _client.GetSyncTable<Garden>();
@@ -61,7 +58,6 @@ namespace CicloGardensClient.Clients
                 await _syncTable.PullAsync(
                     "allGardenItems",
                     _syncTable.CreateQuery());
-                await _syncTable.PushFileChangesAsync();
                 return true;
             }
             catch (Exception e)
@@ -113,26 +109,6 @@ namespace CicloGardensClient.Clients
         {
             await _syncTable.DeleteAsync(garden);
         }
-
-        public async Task<IEnumerable<MobileServiceFile>> GetFilesAsync(Garden garden)
-        {
-            return await _table.GetFilesAsync(garden);
-        }
-
-        public async Task UploadFile(Garden garden, string fileName, Stream stream)
-        {
-            await _syncTable.AddFileAsync(garden, fileName);
-            //await _table.AddFileAsync(garden, fileName, stream);
-        }
-
-        public async Task<Uri> DownloadFile(Garden garden, string fileName)
-        {
-            var files = await _table.GetFilesAsync(garden);
-            var file = files.FirstOrDefault(f => f.Name == fileName);
-            if (file == null)
-                return null;
-            return await _table.GetFileUri(file, StoragePermissions.Read);
-
-        }
+        
     }
 }

@@ -36,8 +36,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Clients\GardenOnlineClient.cs" />
-    <Compile Include="Clients\InMemoryFileSyncHandler.cs" />
-    <Compile Include="Clients\IPlatform.cs" />
     <Compile Include="DataObjects\Garden.cs" />
     <Compile Include="Clients\GardenOfflineClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -51,9 +49,6 @@
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Mobile, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Client.3.1.0\lib\portable-win+net45+wp8+wpa81+monotouch+monoandroid\Microsoft.WindowsAzure.Mobile.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Mobile.Files, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.Mobile.Client.Files.1.0.0-beta-2\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Microsoft.WindowsAzure.Mobile.Files.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Mobile.SQLiteStore, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Mobile.Client.SQLiteStore.3.1.0\lib\portable-win+net45+wp8+wpa81+monotouch10+monoandroid10+xamarinios10\Microsoft.WindowsAzure.Mobile.SQLiteStore.dll</HintPath>

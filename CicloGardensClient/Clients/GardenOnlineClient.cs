@@ -6,9 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CicloGardensClient.DataObjects;
 using Microsoft.WindowsAzure.MobileServices;
-using Microsoft.WindowsAzure.MobileServices.Files;
-using Microsoft.WindowsAzure.MobileServices.Files.Identity;
-using Microsoft.WindowsAzure.MobileServices.Files.Sync;
 using Debug = System.Diagnostics.Debug;
 
 namespace CicloGardensClient.Clients
@@ -31,7 +28,6 @@ namespace CicloGardensClient.Clients
             {
                 _client = new MobileServiceClient("http://ciclogardens.azurewebsites.net");
                 _table = _client.GetTable<Garden>();
-                _client.InitializeFileSyncContext(new InMemoryFileSyncHandler(_table));
                 return true;
             }
             catch (Exception e)
@@ -83,26 +79,6 @@ namespace CicloGardensClient.Clients
         public async Task DeleteAsync(Garden garden)
         {
             await _table.DeleteAsync(garden);
-        }
-
-        public async Task<IEnumerable<MobileServiceFile>> GetFilesAsync(Garden garden)
-        {
-            return await _table.GetFilesAsync(garden);
-        }
-
-        public async Task UploadFile(Garden garden, string fileName, Stream stream)
-        {
-            await _table.AddFileAsync(garden, fileName, stream);
-        }
-
-        public async Task<Uri> DownloadFile(Garden garden, string fileName)
-        {
-            var files = await _table.GetFilesAsync(garden);
-            var file = files.FirstOrDefault(f => f.Name == fileName);
-            if (file == null)
-                return null;
-            return await  _table.GetFileUri(file, StoragePermissions.Read);
-
         }
     }
 }

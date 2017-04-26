@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GardenBlobClientTest.cs" />
     <Compile Include="GardenOfflineClientTest.cs" />
     <Compile Include="GardenOnlineClientTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

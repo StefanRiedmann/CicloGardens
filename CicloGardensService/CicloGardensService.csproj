@@ -157,7 +157,6 @@
   <ItemGroup>
     <Compile Include="App_Start\Startup.MobileApp.cs" />
     <Compile Include="Controllers\GardenController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DataObjects\Garden.cs" />
     <Compile Include="Migrations\201702241826479_FirstSetup.cs" />
     <Compile Include="Migrations\201702241826479_FirstSetup.Designer.cs">

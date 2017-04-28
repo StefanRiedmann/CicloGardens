@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using CicloGardensClient.DataObjects;
 using Microsoft.WindowsAzure.MobileServices;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Debug = System.Diagnostics.Debug;
 
 namespace CicloGardensClient.Clients
 {
     public class GardenOnlineClient
     {
+        //private const string Url = "http://ciclogardens.azurewebsites.net";
+        private const string Url = "http://localhost:50271";
         private MobileServiceClient _client;
+        private HttpClient _httpClient;
+
         private IMobileServiceTable<Garden> _table;
 
         public Task<bool> Initializer;
@@ -26,7 +32,8 @@ namespace CicloGardensClient.Clients
         {
             try
             {
-                _client = new MobileServiceClient("http://ciclogardens.azurewebsites.net");
+                _client = new MobileServiceClient(Url);
+                _httpClient = new HttpClient();
                 _table = _client.GetTable<Garden>();
                 return true;
             }
@@ -79,6 +86,16 @@ namespace CicloGardensClient.Clients
         public async Task DeleteAsync(Garden garden)
         {
             await _table.DeleteAsync(garden);
+        }
+
+        public async Task<CloudBlobContainer> GetGardenBlobContainer(string gardenId)
+        {
+            var url = $"{Url}/tables/Garden/GetToken/{gardenId}?zumo-api-version=2.0.0";
+            //http://ciclogardens.azurewebsites.net/tables/Garden/8dca10e8e6994a55994afb693f86d790?zumo-api-version=2.0.0
+            var result = await _httpClient.GetAsync(url);
+            var blobUrl = await result.Content.ReadAsStringAsync();
+            var blobClient = new CloudBlobContainer(new Uri(blobUrl));
+            return blobClient;
         }
     }
 }

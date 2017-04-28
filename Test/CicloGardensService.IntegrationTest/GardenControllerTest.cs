@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -98,7 +99,9 @@ namespace CicloGardensService.IntegrationTest
             //Arrange
             PostDefaultGardens();
             //Act
-            var getResponse = _client.GetAsync(GetUriWithId(_gardens[0].Id)).Result;
+            var uri = GetUriWithId(_gardens[0].Id);
+            Debug.WriteLine($"uri: {uri}");
+            var getResponse = _client.GetAsync(uri).Result;
             var result = JsonConvert.DeserializeObject<Garden>(getResponse.Content.ReadAsStringAsync().Result);
             //Assert
             Assert.AreEqual("FirstGarden", result.Name);

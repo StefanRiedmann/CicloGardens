@@ -23,14 +23,14 @@ namespace CicloGardensClient.IntegrationTest
         }
 
         [TestMethod]
-        public void InstantiateGardenClient()
+        public void InstantiateGardenClientTest()
         {
             var initResult = _client.Initializer.Result;
             Assert.IsTrue(initResult);
         }
 
         [TestMethod]
-        public void SetAndGetGarden()
+        public void SetAndGetGardenTest()
         {
             Task.Run(async () =>
             {
@@ -50,7 +50,7 @@ namespace CicloGardensClient.IntegrationTest
         }
 
         [TestMethod]
-        public void DeleteGarden()
+        public void DeleteGardenTest()
         {
             Task.Run(async () =>
             {
@@ -72,6 +72,19 @@ namespace CicloGardensClient.IntegrationTest
                 all = await _client.GetGardensAsync();
                 Debug.WriteLine($"Second count: {all.Count}");
                 Assert.AreEqual(0, all.Count);
+
+            }).GetAwaiter().GetResult();
+        }
+
+        [TestMethod]
+        public void GetGardenSassTest()
+        {
+            Task.Run(async () =>
+            {
+                await _client.Initializer;
+
+                var r = await _client.GetGardenBlobContainer("aaa");
+                Debug.WriteLine($"GetGardenSassTest: {r}");
 
             }).GetAwaiter().GetResult();
         }

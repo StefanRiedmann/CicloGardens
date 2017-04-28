@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Configuration;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -6,6 +9,8 @@ using System.Web.Http.OData;
 using Microsoft.Azure.Mobile.Server;
 using CicloGardensService.DataObjects;
 using CicloGardensService.Models;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace CicloGardensService.Controllers
 {
@@ -47,6 +52,56 @@ namespace CicloGardensService.Controllers
         public Task DeleteGarden(string id)
         {
             return DeleteAsync(id);
+        }
+        
+        [HttpGet, Route("tables/Garden/GetToken/{id}")]
+        public string GetToken(string id)
+        {
+            var container = GetContainerReference(id);
+            var policy = new SharedAccessBlobPolicy
+            {
+                SharedAccessStartTime = DateTime.UtcNow,
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
+                Permissions = SharedAccessBlobPermissions.Create |
+                              SharedAccessBlobPermissions.Read |
+                              SharedAccessBlobPermissions.Write |
+                              SharedAccessBlobPermissions.List
+            };
+            var sas = container.GetSharedAccessSignature(policy);
+            var url = $"{container.Uri}{sas}";
+            Trace.WriteLine($"Created blob url for {id}: {url}");
+            return url;
+        }
+
+        private static bool GetClient(out CloudBlobClient client)
+        {
+            var conn = ConfigurationManager.ConnectionStrings["MS_AzureStorageAccountConnectionString"].ConnectionString;
+            if (!CloudStorageAccount.TryParse(conn, out var cloudAccount))
+            {
+                client = null;
+                return false;
+            }
+            client = cloudAccount.CreateCloudBlobClient();
+            return true;
+        }
+
+        private CloudBlobContainer GetContainerReference(string name)
+        {
+            if (!GetClient(out var client))
+                throw new ApplicationException($"CloudBlobClient for {name} could not be created");
+
+            var container = client.GetContainerReference(name);
+            try
+            {
+                if (! container.CreateIfNotExistsAsync().Result)
+                    return null;
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError($"GetContainerReference: {e.Message}");
+                throw;
+            }
+            return container;
         }
     }
 }

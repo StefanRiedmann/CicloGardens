@@ -55,12 +55,12 @@ namespace CicloGardensService.Controllers
         }
         
         [HttpGet, Route("tables/Garden/GetToken/{id}")]
-        public string GetToken(string id)
+        public async Task<string> GetToken(string id)
         {
-            var container = GetContainerReference(id);
+            var container = await GetContainerReference(id);
             var policy = new SharedAccessBlobPolicy
             {
-                SharedAccessStartTime = DateTime.UtcNow,
+                SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-1),
                 SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
                 Permissions = SharedAccessBlobPermissions.Create |
                               SharedAccessBlobPermissions.Read |
@@ -73,35 +73,32 @@ namespace CicloGardensService.Controllers
             return url;
         }
 
-        private static bool GetClient(out CloudBlobClient client)
+        private async Task<CloudBlobContainer> GetContainerReference(string name)
         {
-            var conn = ConfigurationManager.ConnectionStrings["MS_AzureStorageAccountConnectionString"].ConnectionString;
-            if (!CloudStorageAccount.TryParse(conn, out var cloudAccount))
-            {
-                client = null;
-                return false;
-            }
-            client = cloudAccount.CreateCloudBlobClient();
-            return true;
-        }
-
-        private CloudBlobContainer GetContainerReference(string name)
-        {
-            if (!GetClient(out var client))
-                throw new ApplicationException($"CloudBlobClient for {name} could not be created");
-
-            var container = client.GetContainerReference(name);
             try
             {
-                if (! container.CreateIfNotExistsAsync().Result)
-                    return null;
+                var client = GetClient();
+                if (client == null)
+                    throw new ApplicationException($"CloudBlobClient for {name} could not be created");
+                var container = client.GetContainerReference(name);
+                await container.CreateIfNotExistsAsync();
+                return container;
             }
             catch (Exception e)
             {
                 Trace.TraceError($"GetContainerReference: {e.Message}");
                 throw;
             }
-            return container;
+        }
+
+        private static CloudBlobClient GetClient()
+        {
+            var conn = ConfigurationManager.ConnectionStrings["MS_AzureStorageAccountConnectionString"].ConnectionString;
+            if (!CloudStorageAccount.TryParse(conn, out var cloudAccount))
+            {
+                return null;
+            }
+            return cloudAccount.CreateCloudBlobClient();
         }
     }
 }

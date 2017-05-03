@@ -47,7 +47,7 @@ namespace CicloGardensClient.IntegrationTest
                 var contRef = await Client.GetContainerReference("testsass");
                 var policy = new SharedAccessBlobPolicy
                 {
-                    SharedAccessStartTime = DateTime.UtcNow,
+                    SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5),
                     SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(1),
                     Permissions = SharedAccessBlobPermissions.Create |
                                   SharedAccessBlobPermissions.Read |

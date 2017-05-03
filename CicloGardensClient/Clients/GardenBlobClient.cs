@@ -23,8 +23,7 @@ namespace CicloGardensClient.Clients
 
         public async Task<List<CloudBlobContainer>> GetAllBlobContainers()
         {
-            if (!GetClient(out var client))
-                return null;
+            var client = GetClient();
             var result = await client.ListContainersSegmentedAsync(null);
             return result.Results.ToList();
         }
@@ -32,7 +31,7 @@ namespace CicloGardensClient.Clients
 
         public async Task<bool> TestDirect()
         {
-            var container = await GetContainerReference("testcontainer");
+            var container = await GetContainerReference("testcontainer2");
             if (container == null)
                 return false;
 
@@ -47,34 +46,30 @@ namespace CicloGardensClient.Clients
 
         private const string Conn = "DefaultEndpointsProtocol=https;AccountName=ciclogardensstorage;AccountKey=VV+F63jc7uMXN9wenUDaK/oCXX+PKL15EZ7adOb+lv2zzaMEgERuGHNaSZD4xJlU6XyvK4nrnb1V60H0EwjFyw==;EndpointSuffix=core.windows.net";
 
-        private static bool GetClient(out CloudBlobClient client)
+        private static CloudBlobClient GetClient()
         {
             if (!CloudStorageAccount.TryParse(Conn, out var cloudAccount))
             {
-                client = null;
-                return false;
+                return null;
             }
-            client = cloudAccount.CreateCloudBlobClient();
-            return true;
+            return cloudAccount.CreateCloudBlobClient();
         }
 
         public async Task<CloudBlobContainer> GetContainerReference(string name)
         {
-            if (!GetClient(out var client))
-                return null;
 
-            var container = client.GetContainerReference(name);
             try
             {
-                if (!await container.CreateIfNotExistsAsync())
-                    return null;
+                var client = GetClient();
+                var container = client.GetContainerReference(name);
+                await container.CreateIfNotExistsAsync();
+                return container;
             }
             catch (Exception e)
             {
                 Debug.WriteLine($"GetContainerReference: {e.Message}");
                 return null;
             }
-            return container;
         }
 
         #endregion

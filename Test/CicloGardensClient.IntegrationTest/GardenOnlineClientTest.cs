@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CicloGardensClient.Clients;
 using CicloGardensClient.DataObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace CicloGardensClient.IntegrationTest
 {
@@ -81,10 +82,35 @@ namespace CicloGardensClient.IntegrationTest
         {
             Task.Run(async () =>
             {
+                //Arrange
                 await _client.Initializer;
+                var testGardenName = $"test-{Guid.NewGuid()}";
+                await _client.SetGardenAsync(new Garden {Name = testGardenName});
+                var garden = await _client.GetGardenAsync(testGardenName);
+                //Act
+                var container = await _client.GetGardenBlobContainer(garden.Id);
+                var plantsDir = container.GetDirectoryReference("Plants");
+                var blockBlobRef = plantsDir.GetBlockBlobReference("flower1");
+                await blockBlobRef.UploadTextAsync("Beautiful");
+                //Assert Directory
+                var directories = container.ListBlobs().ToList();
+                Assert.AreEqual(1, directories.Count);
 
-                var r = await _client.GetGardenBlobContainer("aaa");
-                Debug.WriteLine($"GetGardenSassTest: {r}");
+                var plantsDirRead = directories[0] as CloudBlobDirectory;
+                Assert.IsNotNull(plantsDirRead);
+                Assert.AreEqual("Plants/", plantsDirRead.Prefix);
+
+                //Assert Directory content
+                var dirContent = plantsDirRead.ListBlobs().ToList();
+                Assert.AreEqual(1, dirContent.Count);
+
+                var plantRead = dirContent[0] as CloudBlockBlob;
+                Assert.IsNotNull(plantRead);
+                Assert.AreEqual("Plants/flower1", plantRead.Name);
+
+                //Assert 'file' content
+                var content = await plantRead.DownloadTextAsync();
+                Assert.AreEqual("Beautiful", content);
 
             }).GetAwaiter().GetResult();
         }

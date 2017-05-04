@@ -35,7 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Clients\GardenBlobClient.cs" />
     <Compile Include="Clients\GardenOnlineClient.cs" />
     <Compile Include="DataObjects\Garden.cs" />
     <Compile Include="Clients\GardenOfflineClient.cs" />

@@ -2,10 +2,13 @@
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.OData;
+using System.Web.Http.Results;
 using Microsoft.Azure.Mobile.Server;
 using CicloGardensService.DataObjects;
 using CicloGardensService.Models;
@@ -55,22 +58,42 @@ namespace CicloGardensService.Controllers
         }
         
         [HttpGet, Route("tables/Garden/GetToken/{id}")]
-        public async Task<string> GetToken(string id)
+        public async Task<IHttpActionResult> GetToken(string id)
         {
-            var container = await GetContainerReference(id);
-            var policy = new SharedAccessBlobPolicy
+            try
             {
-                SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-1),
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
-                Permissions = SharedAccessBlobPermissions.Create |
-                              SharedAccessBlobPermissions.Read |
-                              SharedAccessBlobPermissions.Write |
-                              SharedAccessBlobPermissions.List
-            };
-            var sas = container.GetSharedAccessSignature(policy);
-            var url = $"{container.Uri}{sas}";
-            Trace.WriteLine($"Created blob url for {id}: {url}");
-            return url;
+                var garden = DomainManager.Lookup(id).Queryable.FirstOrDefault();
+                if (garden == null)
+                {
+                    return
+                        new ResponseMessageResult(
+                            Request.CreateErrorResponse(HttpStatusCode.NotFound, new HttpError($"Garden {id} doesn't exist")));
+                }
+                var containerName = $"garden-{garden.Name.ToLower()}";
+                var container = await GetContainerReference(containerName);
+                var policy = new SharedAccessBlobPolicy
+                {
+                    SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-1),
+                    SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
+                    Permissions = SharedAccessBlobPermissions.Create |
+                                  SharedAccessBlobPermissions.Read |
+                                  SharedAccessBlobPermissions.Write |
+                                  SharedAccessBlobPermissions.List
+                };
+                var sas = container.GetSharedAccessSignature(policy);
+                var url = $"{container.Uri}{sas}";
+                Trace.WriteLine($"Created blob url for {id}: {url}");
+                return new ResponseMessageResult(Request.CreateResponse(HttpStatusCode.OK, url));
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError($"GetToken: {e.Message}");
+                return
+                    new ResponseMessageResult(
+                        Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
+                            new HttpError($"Error getting blob storage token for garden {id}")));
+
+            }
         }
 
         private async Task<CloudBlobContainer> GetContainerReference(string name)

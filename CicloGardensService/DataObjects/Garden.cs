@@ -1,4 +1,7 @@
-﻿using Microsoft.Azure.Mobile.Server;
+﻿using System.Data;
+using System.Xml;
+using Microsoft.Azure.Mobile.Server;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CicloGardensService.DataObjects
 {

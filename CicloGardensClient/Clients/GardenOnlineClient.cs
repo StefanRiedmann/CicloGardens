@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using CicloGardensClient.DataObjects;
-using Microsoft.Data.OData;
 using Microsoft.WindowsAzure.MobileServices;
 using Microsoft.WindowsAzure.Storage.Blob;
-using Newtonsoft.Json;
 using Debug = System.Diagnostics.Debug;
 
 namespace CicloGardensClient.Clients
@@ -19,7 +14,6 @@ namespace CicloGardensClient.Clients
     public class GardenOnlineClient
     {
         private MobileServiceClient _client;
-        private HttpClient _httpClient;
 
         private IMobileServiceTable<Garden> _table;
 
@@ -33,7 +27,6 @@ namespace CicloGardensClient.Clients
             try
             {
                 _client = new MobileServiceClient(Constants.Url);
-                _httpClient = new HttpClient();
                 _table = _client.GetTable<Garden>();
             }
             catch (Exception e)

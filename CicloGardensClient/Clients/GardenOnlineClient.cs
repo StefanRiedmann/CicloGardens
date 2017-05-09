@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using CicloGardensClient.DataObjects;
+using Microsoft.Data.OData;
 using Microsoft.WindowsAzure.MobileServices;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
@@ -16,33 +18,28 @@ namespace CicloGardensClient.Clients
 {
     public class GardenOnlineClient
     {
-        //private const string Url = "http://ciclogardens.azurewebsites.net";
-        private const string Url = "http://localhost:50271";
         private MobileServiceClient _client;
         private HttpClient _httpClient;
 
         private IMobileServiceTable<Garden> _table;
 
-        public Task<bool> Initializer;
-
         public GardenOnlineClient()
         {
-            Initializer = InitClientAndSync();
+            InitClient();
         }
 
-        private async Task<bool> InitClientAndSync()
+        private void InitClient()
         {
             try
             {
-                _client = new MobileServiceClient(Url);
+                _client = new MobileServiceClient(Constants.Url);
                 _httpClient = new HttpClient();
                 _table = _client.GetTable<Garden>();
-                return true;
             }
             catch (Exception e)
             {
                 Debug.WriteLine($"Error initialising garden client: {e.Message}");
-                return false;
+                throw;
             }
         }
 
@@ -110,19 +107,11 @@ namespace CicloGardensClient.Clients
 
         public async Task<CloudBlobContainer> GetGardenBlobContainer(string gardenId)
         {
-            var request = WebRequest.CreateHttp($"{Url}/tables/Garden/GetToken/{gardenId}");
-            request.ContentType = "application/json";
-            request.Headers["zumo-api-version"] = "2.0.0";
-            var response = await request.GetResponseAsync();
-            var reader = new StreamReader(response.GetResponseStream());
-            var str = reader.ReadToEnd();
-            var blobUrl = JsonConvert.DeserializeObject<string>(str);
-            //return null;
-
-            //var url = $"{Url}/tables/Garden/GetToken/{gardenId}?zumo-api-version=2.0.0";
-            ////http://ciclogardens.azurewebsites.net/tables/Garden/8dca10e8e6994a55994afb693f86d790?zumo-api-version=2.0.0
-            //var result = await _httpClient.GetAsync(url);
-            //var blobUrl = await result.Content.ReadAsStringAsync();
+            var blobUrl = await _client.InvokeApiAsync<string>(
+                $"/api/Garden/GetToken/{gardenId}",
+                HttpMethod.Get,
+                null,
+                CancellationToken.None);
             var blobClient = new CloudBlobContainer(new Uri(blobUrl));
             return blobClient;
         }

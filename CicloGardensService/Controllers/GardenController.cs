@@ -57,7 +57,7 @@ namespace CicloGardensService.Controllers
             return DeleteAsync(id);
         }
         
-        [HttpGet, Route("tables/Garden/GetToken/{id}")]
+        [HttpGet, Route("api/Garden/GetToken/{id}")]
         public async Task<IHttpActionResult> GetToken(string id)
         {
             try

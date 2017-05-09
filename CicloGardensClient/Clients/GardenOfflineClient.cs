@@ -30,7 +30,7 @@ namespace CicloGardensClient.Clients
         {
             try
             {
-                _client = new MobileServiceClient("http://ciclogardens.azurewebsites.net");
+                _client = new MobileServiceClient(Constants.Url);
                 
                 _table = _client.GetTable<Garden>();
                 _store = new MobileServiceSQLiteStore(@"localstore.db");

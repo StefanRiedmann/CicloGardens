@@ -11,9 +11,11 @@ using Debug = System.Diagnostics.Debug;
 
 namespace CicloGardensClient.Clients
 {
-    public class GardenOnlineClient
+    public class GardenOnlineClient : IGardenClient
     {
         private MobileServiceClient _client;
+
+        public MobileServiceClient MobileServiceClient => _client;
 
         private IMobileServiceTable<Garden> _table;
 

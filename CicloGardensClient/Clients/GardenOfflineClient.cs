@@ -12,12 +12,14 @@ using Debug= System.Diagnostics.Debug;
 
 namespace CicloGardensClient.Clients
 {
-    public class GardenOfflineClient
+    public class GardenOfflineClient: IGardenClient
     {
         private MobileServiceClient _client;
         private IMobileServiceSyncTable<Garden> _syncTable;
         private IMobileServiceTable<Garden> _table;
         private MobileServiceSQLiteStore _store;
+
+        public MobileServiceClient MobileServiceClient => _client;
 
         public Task<bool> Initializer;
 
@@ -30,7 +32,7 @@ namespace CicloGardensClient.Clients
         {
             try
             {
-                _client = new MobileServiceClient("http://ciclogardens.azurewebsites.net");
+                _client = new MobileServiceClient(Constants.Url);
                 
                 _table = _client.GetTable<Garden>();
                 _store = new MobileServiceSQLiteStore(@"localstore.db");
@@ -86,6 +88,25 @@ namespace CicloGardensClient.Clients
             return null;
         }
 
+        public async Task<Garden> GetGardenAsync(string name)
+        {
+            try
+            {
+                var items = await _table.ToEnumerableAsync();
+                var garden = items.FirstOrDefault(g => g.Name.Equals(name));
+                return garden;
+            }
+            catch (MobileServiceInvalidOperationException msioe)
+            {
+                Debug.WriteLine($"Invalid operation: {msioe.Message}");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Exception: {e.Message}");
+            }
+            return null;
+        }
+
         public async Task SetGardenAsync(Garden garden)
         {
             if (garden.Id == null)
@@ -109,6 +130,5 @@ namespace CicloGardensClient.Clients
         {
             await _syncTable.DeleteAsync(garden);
         }
-        
     }
 }

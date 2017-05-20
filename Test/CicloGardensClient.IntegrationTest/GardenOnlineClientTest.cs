@@ -24,19 +24,10 @@ namespace CicloGardensClient.IntegrationTest
         }
 
         [TestMethod]
-        public void InstantiateGardenClientTest()
-        {
-            var initResult = _client.Initializer.Result;
-            Assert.IsTrue(initResult);
-        }
-
-        [TestMethod]
         public void SetAndGetGardenTest()
         {
             Task.Run(async () =>
             {
-                await _client.Initializer;
-
                 var watch = Stopwatch.StartNew();
                 await _client.SetGardenAsync(new Garden { Name = "NewGarden1" });
                 watch.Stop();
@@ -55,8 +46,6 @@ namespace CicloGardensClient.IntegrationTest
         {
             Task.Run(async () =>
             {
-                await _client.Initializer;
-
                 await _client.SetGardenAsync(new Garden { Name = "NewGarden2" });
 
                 var all = await _client.GetGardensAsync();
@@ -78,14 +67,13 @@ namespace CicloGardensClient.IntegrationTest
         }
 
         [TestMethod]
-        public void GetGardenSassTest()
+        public void GetGardenBlobTest()
         {
             Task.Run(async () =>
             {
                 //Arrange
-                await _client.Initializer;
                 var testGardenName = $"test-{Guid.NewGuid()}";
-                await _client.SetGardenAsync(new Garden {Name = testGardenName});
+                await _client.SetGardenAsync(new Garden { Name = testGardenName });
                 var garden = await _client.GetGardenAsync(testGardenName);
                 //Act
                 var container = await _client.GetGardenBlobContainer(garden.Id);

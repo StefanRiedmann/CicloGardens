@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.OData;
+using CicloGardensClient.Clients;
 using CicloGardensService.DataObjects;
 using CicloGardensService.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,8 +25,6 @@ namespace CicloGardensService.IntegrationTest
     [TestClass]
     public class GardenControllerTest
     {
-        public const string BaseUrl = "http://ciclogardens.azurewebsites.net";
-
         private readonly HttpClient _client;
 
         private List<Garden> _gardens ;
@@ -180,12 +179,12 @@ namespace CicloGardensService.IntegrationTest
 
         private string GetDefaultUri()
         {
-            return $"{BaseUrl}/tables/Garden?zumo-api-version=2.0.0";
+            return $"{Constants.Url}/tables/Garden?zumo-api-version=2.0.0";
         }
 
         private string GetUriWithId(string id)
         {
-            return $"{BaseUrl}/tables/Garden/{id}?zumo-api-version=2.0.0";
+            return $"{Constants.Url}/tables/Garden/{id}?zumo-api-version=2.0.0";
         }
 
         private async Task<HttpResponseMessage> PatchAsync(string uri, HttpContent content)

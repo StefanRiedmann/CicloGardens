@@ -8,7 +8,9 @@ namespace CicloGardensClient.Clients
 {
     public static class Constants
     {
-        public const string Url = "https://ciclogardens.azurewebsites.net";
-        //public const string Url = "http://localhost:50271";
+        public static string CurrentUrl = LocalUrl;
+
+        public const string RemoteUrl = "https://ciclogardens.azurewebsites.net";
+        public const string LocalUrl = "http://localhost:50271";
     }
 }

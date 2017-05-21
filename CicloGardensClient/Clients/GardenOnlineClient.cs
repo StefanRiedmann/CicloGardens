@@ -28,7 +28,10 @@ namespace CicloGardensClient.Clients
         {
             try
             {
-                _client = new MobileServiceClient(Constants.Url);
+                _client = new MobileServiceClient(Constants.CurrentUrl)
+                {
+                    AlternateLoginHost = new Uri(Constants.RemoteUrl)
+                };
                 _table = _client.GetTable<Garden>();
             }
             catch (Exception e)
@@ -109,6 +112,16 @@ namespace CicloGardensClient.Clients
                 CancellationToken.None);
             var blobClient = new CloudBlobContainer(new Uri(blobUrl));
             return blobClient;
+        }
+
+        public async Task<string> GetUserInfo ()
+        {
+            var info = await _client.InvokeApiAsync<string>(
+                "/api/Garden/UserInfo",
+                HttpMethod.Get,
+                null,
+                CancellationToken.None);
+            return info;
         }
     }
 }

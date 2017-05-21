@@ -17,6 +17,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace CicloGardensService.Controllers
 {
+    [Authorize]
     public class GardenController : TableController<Garden>
     {
         protected override void Initialize(HttpControllerContext controllerContext)
@@ -55,6 +56,12 @@ namespace CicloGardensService.Controllers
         public Task DeleteGarden(string id)
         {
             return DeleteAsync(id);
+        }
+
+        [HttpGet, Route("api/Garden/UserInfo")]
+        public string UserInfo()
+        {
+            return $"{User.Identity.Name} {User.Identity.AuthenticationType}";
         }
         
         [HttpGet, Route("api/Garden/GetToken/{id}")]

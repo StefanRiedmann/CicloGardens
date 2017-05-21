@@ -22,7 +22,7 @@ namespace CicloGardens.iOS.Platform
             {
                 var user = await _client.MobileServiceClient.LoginAsync(
                     UIApplication.SharedApplication.KeyWindow.RootViewController,
-                    MobileServiceAuthenticationProvider.Google);
+                    MobileServiceAuthenticationProvider.Facebook);
                 System.Diagnostics.Debug.WriteLine($"User logged in: {user.UserId}");
             }
             catch (Exception e)

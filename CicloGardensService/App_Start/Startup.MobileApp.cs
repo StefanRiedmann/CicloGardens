@@ -35,6 +35,8 @@ namespace CicloGardensService
                 // only have a value when running in an App Service application.
                 app.UseAppServiceAuthentication(new AppServiceAuthenticationOptions
                 {
+                    //http://www.systemsabuse.com/2015/12/04/local-debugging-with-user-authentication-of-an-azure-mobile-app-service/
+                    //https://ciclogardens.scm.azurewebsites.net/Env.cshtml
                     SigningKey = ConfigurationManager.AppSettings["SigningKey"],
                     ValidAudiences = new[] { ConfigurationManager.AppSettings["ValidAudience"] },
                     ValidIssuers = new[] { ConfigurationManager.AppSettings["ValidIssuer"] },

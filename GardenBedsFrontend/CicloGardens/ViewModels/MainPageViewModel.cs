@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -26,6 +27,13 @@ namespace CicloGardens.ViewModels
             set { SetProperty(ref _user, value); }
         }
 
+        private string _server;
+        public string Server
+        {
+            get { return _server; }
+            set { SetProperty(ref _server, value); }
+        }
+
         public MainPageViewModel(IGardenClient gardenClient, IAuthenticate authenticator)
         {
             _gardenClient = gardenClient;
@@ -38,11 +46,13 @@ namespace CicloGardens.ViewModels
                 {
                     Title = "Facebook Auth passed";
                     User = _gardenClient.MobileServiceClient.CurrentUser.UserId;
+                    Server = await _gardenClient.GetUserInfo();
                 }
                 else
                 {
                     Title = "Facebook Auth failed";
                     User = null;
+                    Server = null;
                 }
             });
             Logout = new DelegateCommand(async () =>
@@ -53,12 +63,29 @@ namespace CicloGardens.ViewModels
                 {
                     Title = "Facebook logged out";
                     User = null;
+                    Server = null;
                 }
                 else
                 {
                     Title = "Facebook logout failed";
                 }
             });
+
+            MessAround();
+        }
+
+        public async void MessAround()
+        {
+            try
+            {
+                User = _gardenClient.MobileServiceClient?.CurrentUser?.UserId;
+                Server = await _gardenClient.GetUserInfo(); ;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"MessAround: {e.Message}");
+                User = $"MessAround: {e.Message}";
+            }
         }
 
         public DelegateCommand Login { get; set; }

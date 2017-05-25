@@ -107,12 +107,12 @@ namespace CicloGardensClient.IntegrationTest
         [TestMethod]
         public void GetUserInfo()
         {
-            //Task.Run(async () => {
-            //    _client.MobileServiceClient..
-            //    var info = await _client.GetUserInfo();
-            //    Debug.WriteLine($"Info: {info}");
-            //    Assert.IsNotNull(info);
-            //}).GetAwaiter().GetResult();
+            Task.Run(async () =>
+            {
+                var info = await _client.GetUserInfo();
+                Debug.WriteLine($"Info: {info}");
+                Assert.IsNotNull(info);
+            }).GetAwaiter().GetResult();
         }
     }
 }

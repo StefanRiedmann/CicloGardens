@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -12,12 +13,13 @@ using System.Web.Http.Results;
 using Microsoft.Azure.Mobile.Server;
 using CicloGardensService.DataObjects;
 using CicloGardensService.Models;
+using Microsoft.Azure.Mobile.Server.Authentication;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace CicloGardensService.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class GardenController : TableController<Garden>
     {
         protected override void Initialize(HttpControllerContext controllerContext)
@@ -58,12 +60,7 @@ namespace CicloGardensService.Controllers
             return DeleteAsync(id);
         }
 
-        [HttpGet, Route("api/Garden/UserInfo")]
-        public string UserInfo()
-        {
-            return $"{User.Identity.Name} {User.Identity.AuthenticationType}";
-        }
-        
+        [Authorize]
         [HttpGet, Route("api/Garden/GetToken/{id}")]
         public async Task<IHttpActionResult> GetToken(string id)
         {
@@ -129,6 +126,53 @@ namespace CicloGardensService.Controllers
                 return null;
             }
             return cloudAccount.CreateCloudBlobClient();
+        }
+
+        [Authorize]
+        [HttpGet, Route("api/Garden/UserInfo")]
+        public async Task<IHttpActionResult> GetUserInfo()
+        {
+            try
+            {
+                string info = null;
+                // Get the credentials for the logged-in user.
+                var credentials =
+                    await this.User
+                    .GetAppServiceIdentityAsync<FacebookCredentials>(this.Request);
+
+                if (credentials.Provider == "Facebook")
+                {
+                    // Create a query string with the Facebook access token.
+                    var fbRequestUrl = "https://graph.facebook.com/me/feed?access_token="
+                        + credentials.AccessToken;
+
+                    // Create an HttpClient request.
+                    var client = new HttpClient();
+
+                    // Request the current user info from Facebook.
+                    var resp = await client.GetAsync(fbRequestUrl);
+                    resp.EnsureSuccessStatusCode();
+
+                    // Do something here with the Facebook user information.
+                    info = await resp.Content.ReadAsStringAsync();
+                }
+
+                //await Task.Run(() =>
+                //{
+                //    //info = "dummy";
+                //    info = $"User: {User?.Identity?.Name}, Type: {User?.Identity?.AuthenticationType}";
+                //});
+                return new ResponseMessageResult(Request.CreateResponse(HttpStatusCode.OK, info));
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError($"GetToken: {e.Message}");
+                return
+                    new ResponseMessageResult(
+                        Request.CreateErrorResponse(HttpStatusCode.InternalServerError,
+                            new HttpError("Error getting user info")));
+
+            }
         }
     }
 }

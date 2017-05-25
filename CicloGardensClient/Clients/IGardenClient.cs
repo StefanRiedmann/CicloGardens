@@ -16,5 +16,6 @@ namespace CicloGardensClient.Clients
         Task<Garden> GetGardenAsync(string name);
         Task SetGardenAsync(Garden garden);
         Task DeleteAsync(Garden garden);
+        Task<string> GetUserInfo();
     }
 }

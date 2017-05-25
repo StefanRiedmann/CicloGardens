@@ -133,5 +133,10 @@ namespace CicloGardensClient.Clients
         {
             await _syncTable.DeleteAsync(garden);
         }
+
+        public Task<string> GetUserInfo()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

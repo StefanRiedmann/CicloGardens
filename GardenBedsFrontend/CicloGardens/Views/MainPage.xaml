@@ -10,5 +10,6 @@
         <Button Command="{Binding Login}" Text="Login"></Button>
         <Button Command="{Binding Logout}" Text="Logout"></Button>
         <Label Text="{Binding User}" />
+        <Label Text="{Binding Server}" />
     </StackLayout>
 </ContentPage>

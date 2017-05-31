@@ -3,9 +3,13 @@ using System.Threading.Tasks;
 using CicloGardens.Platform;
 using CicloGardensClient.Clients;
 using Microsoft.WindowsAzure.MobileServices;
+using Xamarin.Facebook.Login;
+using System.Collections.Generic;
 
 namespace CicloGardens.Droid.Platform
 {
+    //server flow: https://developer.xamarin.com/guides/xamarin-forms/cloud-services/authentication/azure/
+    //native: https://developers.facebook.com/docs/facebook-login/android
     public class Authenticate : IAuthenticate
     {
         private readonly IGardenClient _client;
@@ -18,6 +22,9 @@ namespace CicloGardens.Droid.Platform
         {
             try
             {
+                var loginMgr = DeviceLoginManager.Instance;
+                loginMgr.LogInWithReadPermissions(MainActivity.Context, new List<string>(new[] { "" }));
+
                 var user = await _client.MobileServiceClient.LoginAsync(MainActivity.Context, MobileServiceAuthenticationProvider.Facebook);
                 System.Diagnostics.Debug.WriteLine($"User logged in: {user.UserId}");
             }

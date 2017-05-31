@@ -1,5 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="23" />
-	<application android:label="CicloGardens.Droid" android:theme="@style/MyTheme"></application>
+  <!-- To access Facebook APIs -->
+	<uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<application android:label="CicloGardens.Droid" android:theme="@style/MyTheme">
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+  </application>
 </manifest>

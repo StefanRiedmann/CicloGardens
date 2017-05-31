@@ -179,12 +179,12 @@ namespace CicloGardensService.IntegrationTest
 
         private string GetDefaultUri()
         {
-            return $"{Constants.Url}/tables/Garden?zumo-api-version=2.0.0";
+            return $"{Constants.CurrentUrl}/tables/Garden?zumo-api-version=2.0.0";
         }
 
         private string GetUriWithId(string id)
         {
-            return $"{Constants.Url}/tables/Garden/{id}?zumo-api-version=2.0.0";
+            return $"{Constants.CurrentUrl}/tables/Garden/{id}?zumo-api-version=2.0.0";
         }
 
         private async Task<HttpResponseMessage> PatchAsync(string uri, HttpContent content)

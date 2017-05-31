@@ -19,7 +19,7 @@ namespace CicloGardens.Droid
     [Activity(Label = "CicloGardens", Icon = "@drawable/icon", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-        internal static Context Context { get; private set; }
+        internal static MainActivity Context { get; private set; }
 
         public MainActivity()
         {

@@ -74,7 +74,9 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchProfiling>true</MtouchProfiling>
     <CodesignKey>iPhone Developer</CodesignKey>
-    <MtouchDebug>true</MtouchDebug>
+    <MtouchDebug>True</MtouchDebug>
+    <IOSDebugOverWiFi>False</IOSDebugOverWiFi>
+    <IOSDebuggerPort>10000</IOSDebuggerPort>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Facebook, Version=4.10.0.0, Culture=neutral, processorArchitecture=MSIL">

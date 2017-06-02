@@ -12,5 +12,8 @@ namespace CicloGardensClient.Clients
 
         public const string RemoteUrl = "https://ciclogardens.azurewebsites.net";
         public const string LocalUrl = "http://localhost:50271";
+
+        public const string FacebookAppId = "302572736839707";
+        public const string FacebookAppName = "Cicl­o­G­a­r­dens";
     }
 }

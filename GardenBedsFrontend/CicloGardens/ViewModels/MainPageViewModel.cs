@@ -70,6 +70,10 @@ namespace CicloGardens.ViewModels
                     Title = "Facebook logout failed";
                 }
             });
+            App.PostSuccessFacebookAction = token =>
+            {
+                Title = $"From native: {token}";
+            };
 
             MessAround();
         }

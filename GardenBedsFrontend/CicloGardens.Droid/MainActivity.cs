@@ -36,6 +36,18 @@ namespace CicloGardens.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App(new AndroidInitializer()));
         }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+
+            if (resultCode == Result.FirstUser)
+            {
+                var token = data.GetStringExtra("facebookToken");
+                App.PostSuccessFacebookAction(token);
+            }
+
+        }
     }
 
     public class AndroidInitializer : IPlatformInitializer

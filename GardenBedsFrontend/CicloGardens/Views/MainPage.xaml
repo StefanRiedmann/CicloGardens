@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:views="clr-namespace:CicloGardens.Views;assembly=CicloGardens"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="CicloGardens.Views.MainPage"
              Title="MainPage">
@@ -11,5 +12,7 @@
         <Button Command="{Binding Logout}" Text="Logout"></Button>
         <Label Text="{Binding User}" />
         <Label Text="{Binding Server}" />
+
+        <views:FacebookLoginButton>xx</views:FacebookLoginButton>
     </StackLayout>
 </ContentPage>

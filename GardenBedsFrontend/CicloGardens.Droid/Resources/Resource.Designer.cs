@@ -3441,6 +3441,9 @@ namespace CicloGardens.Droid
 			// aapt resource value: 0x7f080038
 			public const int facebook_app_id = 2131230776;
 			
+			// aapt resource value: 0x7f080039
+			public const int facebook_app_name = 2131230777;
+			
 			// aapt resource value: 0x7f080037
 			public const int messenger_send_button_text = 2131230775;
 			

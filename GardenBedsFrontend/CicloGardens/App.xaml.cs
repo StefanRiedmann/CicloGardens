@@ -1,4 +1,5 @@
-﻿using Prism.Unity;
+﻿using System;
+using Prism.Unity;
 using CicloGardens.Views;
 using CicloGardensClient.Clients;
 using Microsoft.Practices.Unity;
@@ -8,6 +9,8 @@ namespace CicloGardens
 {
     public partial class App : PrismApplication
     {
+        public static Action<string> PostSuccessFacebookAction { get; set; }
+
         public App(IPlatformInitializer initializer = null) : base(initializer) { }
 
         protected override void OnInitialized()

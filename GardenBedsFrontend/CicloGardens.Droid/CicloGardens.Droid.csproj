@@ -144,6 +144,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FacebookActivity.cs" />
+    <Compile Include="FacebookLoginButtonRendererAndroid.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Platform\Authenticate.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
